@@ -1,0 +1,482 @@
+{
+  "name": "Registración Curso",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "WEBHOOK conectado a https://admin.typeform.com/\nCree un formulario que pide datos personas, mail, y pregunta si desea participar de un curso",
+        "height": 96,
+        "width": 640
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -656,
+        32
+      ],
+      "typeVersion": 1,
+      "id": "fbf64210-b2d8-4327-b2ca-3543b809ed79",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pract2",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -608,
+        192
+      ],
+      "id": "13eb63a6-790b-410f-8bca-c605e17885bd",
+      "name": "Webhook",
+      "webhookId": "8cce5f27-9ca5-48f7-afc3-0b2e6019f56f"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "17f1703f-c28e-4d50-9c3b-6dccc61dd8d3",
+              "name": "Hora_registración",
+              "value": "={{ $('Webhook').item.json.body.form_response.submitted_at.substring(11,19) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        192
+      ],
+      "id": "e7b7a5f4-c504-4597-a9e2-a56e17264bf9",
+      "name": "Hora Registración"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "17f1703f-c28e-4d50-9c3b-6dccc61dd8d3",
+              "name": "body.form_response.submitted_at",
+              "value": "={{ $('Webhook').item.json.body.form_response.submitted_at.substring(0,10)}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -144,
+        192
+      ],
+      "id": "f45e23fd-cd00-49e3-9074-874ecfc33747",
+      "name": "DIA REGISTRACION"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2eda7bd4-d5b6-4025-8799-b5021cb6e2f3",
+              "leftValue": "={{ $('Append or update row in sheet1').item.json['Curso Talend?'] }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "ecc8155b-e444-4c48-bed2-670e8a7d2845",
+              "leftValue": "={{ $('Append or update row in sheet1').item.json['Envio Mail Confirmación'] }}",
+              "rightValue": "SI",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        192
+      ],
+      "id": "78f4b88e-6f28-4e3a-94a5-89aa29e51656",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Append or update row in sheet1').item.json.Email }}\n",
+        "subject": "Confirmación Curso TALEND ",
+        "message": "=<p>{{ $('Append or update row in sheet1').item.json.Nombre }}</p>\n<p>&nbsp; &nbsp; &nbsp;Confirmamos su registración al curso de TALEND el día {{ $('DIA REGISTRACION').item.json.body.form_response.submitted_at }} a las {{ $('Hora Registración').item.json['Hora_registración'] }} hs.   de&nbsp;</p>\n<p>&nbsp;</p>\n<p>DATOS CURSO VIRTUAL:<br /> - Fecha Inicio 20/11/2025.<br /> - Fecha Fin 18/12/2025.<br /> - Jueves de 19hs a 21hs.</p>\n<p>Saludos Cordiales,</p>\n<p>Equipo de Capacitaci&oacute;n TALEND</p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        640,
+        192
+      ],
+      "id": "586cca40-df9a-47d9-baaa-06f4c1ea05d9",
+      "name": "Confirmación por mail",
+      "webhookId": "e9dca5aa-1d34-418e-9674-176d82ec806f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "dVtjOD0QMNARFt0Q",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1iRrwUq8DmokE57uP1pNbSrexLNQTvEDGxJ6XQeY1lFc",
+          "mode": "list",
+          "cachedResultName": "Encuesta curso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iRrwUq8DmokE57uP1pNbSrexLNQTvEDGxJ6XQeY1lFc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iRrwUq8DmokE57uP1pNbSrexLNQTvEDGxJ6XQeY1lFc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nombre": "={{ $json.body.form_response.answers[2].text }}",
+            "Apellido": "={{ $json.body.form_response.answers[3].text }}",
+            "Telefono": "={{ $json.body.form_response.answers[4].phone_number }}",
+            "Email": "={{ $json.body.form_response.answers[5].email }}",
+            "Empresa": "={{ $json.body.form_response.answers[6].text }}",
+            "Curso Talend?": "={{ $json.body.form_response.answers[0].boolean }}",
+            "Envio Mail Confirmación": "=",
+            "DNI": "={{ $json.body.form_response.answers[1].number }}"
+          },
+          "matchingColumns": [
+            "DNI"
+          ],
+          "schema": [
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Apellido",
+              "displayName": "Apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DNI",
+              "displayName": "DNI",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Telefono",
+              "displayName": "Telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Curso Talend?",
+              "displayName": "Curso Talend?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Envio Mail Confirmación",
+              "displayName": "Envio Mail Confirmación",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -400,
+        192
+      ],
+      "id": "a8288f9f-8549-4b3b-bb86-073011104ef1",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5AZdzvpp8N01UeAN",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1iRrwUq8DmokE57uP1pNbSrexLNQTvEDGxJ6XQeY1lFc",
+          "mode": "list",
+          "cachedResultName": "Encuesta curso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iRrwUq8DmokE57uP1pNbSrexLNQTvEDGxJ6XQeY1lFc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iRrwUq8DmokE57uP1pNbSrexLNQTvEDGxJ6XQeY1lFc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Envio Mail Confirmación": "SI",
+            "DNI": "={{ $('Append or update row in sheet1').item.json.DNI }}"
+          },
+          "matchingColumns": [
+            "DNI"
+          ],
+          "schema": [
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Apellido",
+              "displayName": "Apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DNI",
+              "displayName": "DNI",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Telefono",
+              "displayName": "Telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Curso Talend?",
+              "displayName": "Curso Talend?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Envio Mail Confirmación",
+              "displayName": "Envio Mail Confirmación",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        928,
+        192
+      ],
+      "id": "d9efa80d-1203-4f7e-9d78-262fbbb87125",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5AZdzvpp8N01UeAN",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hora Registración": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DIA REGISTRACION": {
+      "main": [
+        [
+          {
+            "node": "Hora Registración",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Confirmación por mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirmación por mail": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "DIA REGISTRACION",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Argentina/Buenos_Aires",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "4f38df1d-bf89-4167-92c2-7f89ef856a05",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5003df0dc7a20dd15d4dfae675295080ecb1bdd10be80dd57b639f22e877cd96"
+  },
+  "id": "X2YuLh2ZwjGp3LhC",
+  "tags": []
+}

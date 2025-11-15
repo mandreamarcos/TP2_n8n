@@ -1,0 +1,166 @@
+{
+  "name": "Temperatura",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=-34.6131&longitude=-58.3772&hourly=temperature_2m&forecast_days=1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -48,
+        -32
+      ],
+      "id": "3d59e6ba-1910-46f4-ad33-8ad61dc0bb63",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "chatId": "8391101452",
+        "text": "=Temperatura 8hs:  {{ $('temp_8hs').item.json.temperatura8hs }}\nTemperatura 15hs: {{ $json.temp_15hs }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        -32
+      ],
+      "id": "5139a0f1-6ef5-4c4f-8887-ed2f57289d09",
+      "name": "Send a text message",
+      "webhookId": "3b2cfc65-d810-47ba-9d87-6b9723856e33",
+      "credentials": {
+        "telegramApi": {
+          "id": "gPB8f3DLZq28uOpN",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4182f449-13bf-42e2-ae46-d57b5f694cf8",
+              "name": "temperatura8hs",
+              "value": "={{ $json.hourly.temperature_2m[8] }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        -32
+      ],
+      "id": "1508bd90-3b30-4c24-af88-5a351161c257",
+      "name": "temp_8hs"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2530a948-3159-4ddf-8225-79f544b5190c",
+              "name": "temp_15hs",
+              "value": "={{ $('HTTP Request').item.json.hourly.temperature_2m[15] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        -32
+      ],
+      "id": "ca1a9c9b-bd23-4bd8-90af-2e295d35c275",
+      "name": "temp_15hs"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -288,
+        -32
+      ],
+      "id": "1e665c07-905b-483b-90f4-b051b0b59256",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "temp_8hs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "temp_8hs": {
+      "main": [
+        [
+          {
+            "node": "temp_15hs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "temp_15hs": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1b8c3085-1932-431a-9726-424694fb7abb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5003df0dc7a20dd15d4dfae675295080ecb1bdd10be80dd57b639f22e877cd96"
+  },
+  "id": "bvedBpR4drZ3ByFt",
+  "tags": []
+}
