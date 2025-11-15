@@ -154,9 +154,13 @@
   },
   "active": false,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "timezone": "America/Argentina/Buenos_Aires",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1,
+    "availableInMCP": false
   },
-  "versionId": "1b8c3085-1932-431a-9726-424694fb7abb",
+  "versionId": "00351912-4e3c-4c05-b81b-ee2f27e1301b",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "5003df0dc7a20dd15d4dfae675295080ecb1bdd10be80dd57b639f22e877cd96"
